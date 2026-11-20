@@ -1,0 +1,40 @@
+project:
+  type: website
+  output-dir: _site
+  render:
+    - index.qmd
+    - painel.qmd
+    - docs/*.md
+
+lang: pt-BR
+
+website:
+  title: "Observatório da Arborização · SP"
+  site-url: "https://micadw.github.io/arborizacao-sp"
+  repo-url: "https://github.com/micadw/arborizacao-sp"
+  repo-actions: [source, issue]
+  navbar:
+    left:
+      - href: index.qmd
+        text: Início
+      - href: painel.qmd
+        text: Painel
+      - text: Documentação
+        menu:
+          - href: docs/01_catalogo_fontes.md
+          - href: docs/02_matriz_metas.md
+          - href: docs/03_benchmarking.md
+          - href: docs/04_indicadores_painel.md
+          - href: docs/decisoes.md
+          - href: docs/backlog.md
+  page-footer:
+    center: "Projeto pessoal com dados abertos · não representa posição oficial da Prefeitura de São Paulo"
+
+format:
+  html:
+    theme:
+      light: [cosmo, styles/light.scss]
+      dark: [darkly, styles/dark.scss]
+    respect-user-color-scheme: true
+    toc: true
+    code-fold: true

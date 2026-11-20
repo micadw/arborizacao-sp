@@ -1,0 +1,12 @@
+{
+  "title": "Observatório da Arborização Urbana de São Paulo",
+  "upload_type": "software",
+  "description": "Código, documentação e indicadores agregados sobre arborização urbana, cobertura vegetal e metas climáticas no município de São Paulo, construídos somente com dados abertos. Projeto pessoal e acadêmico; não representa posição oficial da Prefeitura de São Paulo.",
+  "creators": [
+    {"name": "Farina, Amilcar Ferraz"}
+  ],
+  "keywords": ["arborização urbana", "floresta urbana", "cobertura vegetal", "PlanClima", "dados abertos", "São Paulo"],
+  "license": "MIT",
+  "language": "por",
+  "access_right": "open"
+}

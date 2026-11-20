@@ -1,0 +1,12 @@
+/*-- scss:defaults --*/
+$primary: #2e7d32;
+$link-color: #1b5e20;
+
+/*-- scss:rules --*/
+:root {
+  --verde-1: #e8f5e9; --verde-2: #a5d6a7; --verde-3: #66bb6a;
+  --verde-4: #2e7d32; --verde-5: #1b5e20;
+}
+.card-meta { border-left: 4px solid var(--verde-4); padding: .75rem 1rem; margin-bottom: 1rem; }
+.card-meta .valor { font-size: 2rem; font-weight: 700; }
+.card-meta .fonte { font-size: .8rem; opacity: .75; }

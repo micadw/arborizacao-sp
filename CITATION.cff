@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "Se usar este material, cite-o como abaixo."
+title: "Observatório da Arborização Urbana de São Paulo"
+type: software
+authors:
+  - family-names: "Farina"
+    given-names: "Amilcar Ferraz"
+    alias: "Mica"
+repository-code: "https://github.com/micadw/arborizacao-sp"
+license: MIT
+version: "0.1.0"
+date-released: "2026-11-20"
+keywords:
+  - arborização urbana
+  - floresta urbana
+  - cobertura vegetal
+  - dados abertos
+  - São Paulo

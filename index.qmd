@@ -1,0 +1,17 @@
+---
+title: "Observatório da Arborização Urbana de São Paulo"
+subtitle: "Árvores, cobertura vegetal e metas climáticas da cidade, com dados abertos"
+---
+
+::: {.callout-note}
+Projeto pessoal e acadêmico, construído só com dados abertos. Não representa posição oficial da Prefeitura de São Paulo.
+:::
+
+Este observatório reúne, numa mesma base, o que a cidade publica sobre suas árvores — plantios, podas, remoções, quedas, cobertura vegetal, orçamento — e compara com as metas do **Plano Diretor**, do **Plano Municipal de Arborização Urbana**, do **PlanClima SP** e do **Programa de Metas 2025-2028**.
+
+- **[Painel](painel.qmd)** — cartões de meta, mapa por distrito e subprefeitura (em construção).
+- **[Catálogo de fontes](docs/01_catalogo_fontes.md)** — de onde vêm os dados e o que ainda falta confirmar.
+- **[Matriz de metas](docs/02_matriz_metas.md)** — o que foi prometido, por quem e até quando.
+- **[Indicadores](docs/04_indicadores_painel.md)** — como cada número é calculado.
+
+Use o botão de tema (☀/☾) no topo para alternar entre claro e escuro.

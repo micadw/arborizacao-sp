@@ -1,0 +1,19 @@
+---
+title: "Arborização urbana e metas climáticas em São Paulo: um observatório com dados abertos"
+author: "Amilcar Ferraz Farina"
+lang: pt-BR
+bibliography: refs.bib
+format: html
+---
+
+## Introdução
+
+*Rascunho — sprint 4.*
+
+## Dados e métodos
+
+## Resultados
+
+## Discussão
+
+## Referências

@@ -1,0 +1,28 @@
+# dados (ficam no Drive / Zenodo)
+data/raw/
+data/interim/
+data/processed/
+*.gpkg
+*.shp
+*.shx
+*.dbf
+*.prj
+*.tif
+*.parquet
+!site_data/*.parquet
+
+# segredos
+.env
+*.token
+secrets*
+
+# Python / Jupyter
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.venv/
+
+# Quarto
+/_site/
+/.quarto/
+*_files/
