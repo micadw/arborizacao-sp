@@ -18,11 +18,13 @@ title: "Indicadores e desenho do painel"
 | I08 | Plantio (bruto) | nº de mudas plantadas no período | #6, #7 | S, M | 2 |
 | I09 | Saldo líquido de árvores | plantios − (remoções + quedas) | #5, #6 (+ e-SIC) | S, M | 3 |
 | I10 | Progresso da Meta 3 do PdM | I09 acumulado desde 2025 / 200.000 | M1 | M | 3 |
-| I11 | % de espécies nativas da Mata Atlântica | árvores nativas / total (inventário) | #1, #2 | D | 4 |
+| I11 | % de espécies nativas da Mata Atlântica | árvores nativas / total (inventário) | #2 (a camada #1 não tem espécie) | D | 4 |
 | I12 | Estoque e sequestro de carbono | Σ biomassa(DAP, espécie) × fator de carbono | #1, #2, #15 | P → D | 4 |
 | I13 | Execução orçamentária da arborização | liquidado / dotação atualizada (ações de plantio e manejo) | #21 | órgão, S | 2 |
 | I14 | Custo por árvore plantada | liquidado em plantio / I08 | #21, #6 | S | 3 |
 | I15 | Bosques urbanos e jardins de chuva | nº entregue / alvo | M3, M5 | M | 2 |
+| I17 | Distância à Meta 85 do PlanClima | (base 2017 + 1 p.p.) − cobertura atual | #10 + novo mapeamento | D | 3 |
+| I18 | Quedas por 10 mil árvores viárias | quedas registradas / árvores viárias × 10.000 | #4b, #1 | S | 2 ✅ |
 | I16 | Exposição ao calor × copa | correlação LST × I02 por distrito | #12, #10 | D | 3 |
 
 ## Wireframe do painel (`painel.qmd`)

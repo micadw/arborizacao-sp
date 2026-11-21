@@ -1,49 +1,98 @@
 ---
 title: "Painel"
-subtitle: "Versão 0 — esqueleto com valores oficiais agregados; mapas entram no sprint 2"
+subtitle: "Versão 0.2 — dados reais do GeoSampa e da execução orçamentária (extração de 2026-11-20)"
 toc: false
 ---
 
 ::: {.callout-warning}
-Valores de referência retirados de comunicados oficiais (ver [matriz de metas](docs/02_matriz_metas.md)). **Plantio bruto não é saldo líquido**: a Meta 3 do Programa de Metas mede saldo, que ainda não pode ser calculado com dados abertos.
+**Plantio bruto não é saldo líquido.** A Meta 3 do Programa de Metas mede saldo de árvores, que ainda não pode ser calculado com dados abertos. A cobertura vegetal vem do Mapeamento Digital (voo de 2017), a **linha de base da Meta 85 do PlanClima**. Projeto pessoal com dados abertos; não representa posição oficial da PMSP.
 :::
 
 ```{ojs}
 //| echo: false
-metas = [
-  {meta: "Plantio desde 2025 (bruto) × Meta 3 PdM", realizado: 194938, alvo: 200000, unidade: "árvores", fonte: "SECOM, jun/2026 — plantio bruto", nota: "Meta mede saldo líquido"},
-  {meta: "Bosques urbanos", realizado: null, alvo: 50, unidade: "bosques", fonte: "PdM 2025-2028", nota: "estoque atual a confirmar"},
-  {meta: "Jardins de chuva", realizado: null, alvo: 1000, unidade: "jardins", fonte: "PdM 2025-2028", nota: "estoque atual a confirmar"},
-  {meta: "Cobertura vegetal (PdM 2021-24, histórica)", realizado: 54.13, alvo: 50, unidade: "%", fonte: "SVMA, jun/2023", nota: "atingida"}
-]
+resumo = FileAttachment("site_data/resumo.json").json()
+distritos = FileAttachment("site_data/distrito.geojson").json()
+subs = FileAttachment("site_data/subprefeitura.geojson").json()
+orc = FileAttachment("site_data/orcamento_subprefeitura_ano.csv").csv({typed: true})
+orcAcao = FileAttachment("site_data/orcamento_acao_ano.csv").csv({typed: true})
+fmt = v => v === null || v === undefined || Number.isNaN(v) ? "—" : v.toLocaleString("pt-BR")
 ```
+
+## Metas
 
 ```{ojs}
 //| echo: false
-fmt = v => v === null ? "—" : v.toLocaleString("pt-BR")
+liq2026 = d3.sum(orcAcao.filter(d => d.ano === 2026), d => d.Vl_Liquidado)
+atu2026 = d3.sum(orcAcao.filter(d => d.ano === 2026), d => d.Vl_Orcado_Atualizado)
+metas = [
+  {meta: "Árvores viárias cadastradas (GeoSampa)", valor: fmt(resumo.arvores_viarias_total), alvo: "", barra: null, fonte: "camada geoportal:arvore · 2026-11-20"},
+  {meta: "Plantio desde 2025 (bruto) × Meta 3 do PdM (+200 mil líquidas)", valor: fmt(194938), alvo: "/ 200.000", barra: 194938 / 200000, fonte: "SECOM, jun/2026 · plantio bruto, não saldo"},
+  {meta: "Cobertura vegetal do município (base 2017)", valor: resumo.cobertura_vegetal_pct_municipio.toLocaleString("pt-BR") + "%", alvo: "Meta 85: +1 p.p. por distrito até 2028", barra: null, fonte: "Mapeamento Digital da Cobertura Vegetal"},
+  {meta: "Execução das ações de áreas verdes e arborização em 2026", valor: (liq2026 / 1e6).toLocaleString("pt-BR", {maximumFractionDigits: 0}) + " mi", alvo: "/ " + (atu2026 / 1e6).toLocaleString("pt-BR", {maximumFractionDigits: 0}) + " mi atualizados", barra: liq2026 / atu2026, fonte: "Execução orçamentária (CKAN) · ações 2705, 6655, 6682"},
+  {meta: "Quedas de árvore registradas em 2026", valor: fmt(resumo.quedas_registradas), alvo: resumo.quedas_periodo.join(" a "), barra: null, fonte: "Defesa Civil (SIGRC) via GeoSampa"},
+  {meta: "Bosques urbanos (PdM e PlanClima Meta 53)", valor: "—", alvo: "/ 50 até 2028", barra: null, fonte: "estoque atual sem dado aberto"}
+]
 html`<div class="grid">${metas.map(m => html`
-  <div class="g-col-12 g-col-md-6 card-meta">
+  <div class="g-col-12 g-col-md-6 g-col-lg-4 card-meta">
     <div>${m.meta}</div>
-    <div class="valor">${fmt(m.realizado)} <small>/ ${fmt(m.alvo)} ${m.unidade}</small></div>
-    ${m.realizado !== null ? html`<progress max=${m.alvo} value=${Math.min(m.realizado, m.alvo)} style="width:100%"></progress>` : html`<em>sem dado aberto</em>`}
-    <div class="fonte">${m.fonte} · ${m.nota}</div>
+    <div class="valor">${m.valor} <small>${m.alvo}</small></div>
+    ${m.barra !== null ? html`<progress max="1" value=${Math.min(m.barra, 1)} style="width:100%"></progress>` : ""}
+    <div class="fonte">${m.fonte}</div>
   </div>`)}</div>`
 ```
 
-## Mapa por território *(sprint 2)*
+## Mapa
 
 ```{ojs}
 //| echo: false
-viewof granularidade = Inputs.radio(["distrito", "subprefeitura", "quadra", "pixel"], {label: "Granularidade", value: "distrito"})
-viewof indicador = Inputs.select(new Map([
-  ["Cobertura arbórea em área urbanizada (I02)", "I02"],
-  ["Árvores viárias por km de via (I03)", "I03"],
-  ["Pedidos de poda/remoção por 1.000 árvores (I06)", "I06"],
-  ["Execução orçamentária (I13)", "I13"]
-]), {label: "Indicador"})
+viewof nivel = Inputs.radio(["distrito", "subprefeitura"], {label: "Granularidade", value: "distrito"})
+indicadores = nivel === "distrito"
+  ? new Map([
+      ["Cobertura arbórea (% da área)", "pct_cobertura_arborea"],
+      ["Cobertura vegetal (% da área) — base da Meta 85", "pct_cobertura_vegetal"],
+      ["Alvo da Meta 85 em 2028 (% , base + 1 p.p.)", "alvo_meta85"],
+      ["Árvores viárias por km²", "arvores_por_km2"]])
+  : new Map([
+      ["Quedas por 10 mil árvores viárias (2026)", "quedas_por_10mil_arvores"],
+      ["Árvores viárias", "arvores_viarias"],
+      ["Execução 2026: liquidado (R$ mi)", "liquidado_mi"],
+      ["Execução 2026: % liquidado do atualizado", "pct_liquidado"]])
+viewof indicador = Inputs.select(indicadores, {label: "Indicador"})
 ```
 
 ```{ojs}
 //| echo: false
-md`O mapa coroplético de **${indicador}** por **${granularidade}** será lido de \`site_data/${granularidade}.geojson\`, gerado pelo notebook \`001_coleta\`.`
+orc2026 = new Map(orc.filter(d => d.ano === 2026).map(d => [d.chave_sub, d]))
+camada = {
+  const fc = structuredClone(nivel === "distrito" ? distritos : subs);
+  for (const f of fc.features) {
+    const p = f.properties;
+    if (nivel === "distrito") p.alvo_meta85 = p.pct_cobertura_vegetal + 1;
+    else {
+      const o = orc2026.get(p.chave_sub);
+      p.liquidado_mi = o ? +(o.Vl_Liquidado / 1e6).toFixed(1) : null;
+      p.pct_liquidado = o ? o.pct_liquidado : null;
+    }
+  }
+  return fc;
+}
+nome = f => f.properties.nm_distrito_municipal ?? f.properties.nm_subprefeitura
+Plot.plot({
+  projection: {type: "mercator", domain: camada},
+  width: 760, height: 760,
+  style: {background: "transparent", color: "currentColor"},
+  color: {scheme: "greens", legend: true, style: {background: "transparent", color: "currentColor"}, label: [...indicadores].find(([, v]) => v === indicador)[0]},
+  marks: [
+    Plot.geo(camada, {fill: d => d.properties[indicador], stroke: "currentColor", strokeOpacity: 0.3,
+      title: d => `${nome(d)}\n${fmt(d.properties[indicador])}`, tip: true})
+  ]
+})
 ```
+
+```{ojs}
+//| echo: false
+Inputs.table(camada.features.map(f => ({territorio: nome(f), valor: f.properties[indicador]})),
+  {sort: "valor", reverse: true, rows: 12})
+```
+
+<small>Fontes: GeoSampa (WFS) — árvores viárias, cobertura vegetal, distritos, subprefeituras, quedas (SIGRC); Portal de Dados Abertos — execução orçamentária. Detalhes em [catálogo de fontes](docs/01_catalogo_fontes.md).</small>

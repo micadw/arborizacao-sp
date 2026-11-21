@@ -6,7 +6,7 @@ Painel e base de dados sobre as árvores da cidade de São Paulo: plantios, poda
 
 **Palavras-chave:** arborização urbana · floresta urbana · cobertura vegetal · infraestrutura verde · PlanClima · Programa de Metas · SIG · dados abertos · São Paulo
 
-**Status:** sprint 1 (fundação) — ver [`docs/backlog.md`](docs/backlog.md).
+**Status:** sprint 2 em andamento — dados reais do GeoSampa e do orçamento no painel; ver [`docs/backlog.md`](docs/backlog.md).
 
 ## Perguntas
 
@@ -26,11 +26,18 @@ Painel e base de dados sobre as árvores da cidade de São Paulo: plantios, poda
 
 ## Como reproduzir
 
-1. Abra o notebook de coleta no Colab:
+1. Linha de comando (precisa de acesso à internet):
+   ```bash
+   pip install -r requirements.txt
+   python -m src.orcamento --raw data/raw/sof --out site_data
+   python -m src.agregados --raw data/raw --out site_data   # ~30 min
+   quarto render
+   ```
+2. Ou abra o notebook de coleta no Colab:
    [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/micadw/arborizacao-sp/blob/main/notebooks/001_coleta.ipynb)
-2. Monte o Drive quando o notebook pedir; os dados brutos vão para a pasta do projeto no Drive (nunca para o git).
-3. Para o orçamento, gere um token gratuito da API-SOF e guarde-o nos *Secrets* do Colab como `SOF_TOKEN`.
-4. Site local: `quarto preview` na raiz do repositório.
+3. Monte o Drive quando o notebook pedir; os dados brutos vão para a pasta do projeto no Drive (nunca para o git).
+4. O orçamento usa a base aberta do SOF e não precisa de token; a API-SOF (token) só é necessária para empenhos e credores.
+5. Site local: `quarto preview` na raiz do repositório.
 
 ## Estrutura
 

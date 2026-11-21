@@ -26,3 +26,5 @@ __pycache__/
 /_site/
 /.quarto/
 *_files/
+
+**/*.quarto_ipynb
