@@ -1,0 +1,13 @@
+{
+ "arvores_viarias_total": 652929,
+ "arvores_com_especie_pct": 0.0,
+ "cobertura_vegetal_pct_municipio": 48.0,
+ "cobertura_arborea_pct_municipio": 42.7,
+ "quedas_registradas": 1836,
+ "quedas_periodo": [
+  "2026-01-01",
+  "2026-09-30"
+ ],
+ "urgencias_sp156_arvore": 947,
+ "fonte_cobertura": "Mapeamento Digital da Cobertura Vegetal (voo 2017)"
+}
