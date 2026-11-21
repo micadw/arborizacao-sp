@@ -2,8 +2,8 @@ titulo: Observatório da Arborização Urbana de São Paulo
 codigo: a6-urb-inf
 codigos_sec: [a5-flor, a1-geo, a6-clima]
 palavras_chave: [arborização urbana, cobertura vegetal, PlanClima, Programa de Metas, SIG, dados abertos, São Paulo]
-status: rascunho   # rascunho | em-andamento | publicado
-visibilidade: privado
+status: em-andamento   # rascunho | em-andamento | publicado
+visibilidade: publico
 figura: reports/figures/capa.png
 publicado_em: []
 aviso: Projeto pessoal com dados abertos; não representa posição oficial da PMSP.

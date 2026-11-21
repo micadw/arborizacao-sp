@@ -1,0 +1,8 @@
+---
+title: "Sprints"
+subtitle: "O que já foi feito e o que vem a seguir"
+---
+
+{{< include docs/backlog.md >}}
+
+Registro das escolhas metodológicas: [decisões](docs/decisoes.md).

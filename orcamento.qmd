@@ -1,0 +1,80 @@
+---
+title: "Orçamento das árvores"
+subtitle: "Ações orçamentárias ligadas à arborização — quem executa e quanto (2024–2026)"
+toc: true
+---
+
+## Existem dotações específicas para poda, remoção, plantio e replantio?
+
+**Não há uma dotação por tipo de serviço.** No orçamento municipal, o gasto com árvores está concentrado em poucas ações (projeto/atividade), e a separação entre poda, remoção, plantio e replantio só aparece nos **contratos e empenhos**, não na dotação.
+
+| Ação | O que cobre | Quem executa | Elemento de despesa |
+|---|---|---|---|
+| **2705** — Manutenção e Operação de Áreas Verdes e Vegetação Arbórea | Manejo arbóreo (poda, remoção, destoca) e manutenção de praças e canteiros | **32 subprefeituras**, **SMSUB** (contratos centralizados) e **SME** (áreas verdes das escolas) | Serviços de terceiros — PJ (contratos) |
+| **6655** — Promoção da Arborização Urbana | Plantio e replantio, Programa de Metas | **SVMA** | Serviços de terceiros — PJ |
+| **6682 / 6686** — Viveiros de Produção / Estacionais | Produção de mudas | **SVMA** | Serviços de terceiros — PJ |
+| **1712 / 7129** — Construção e reforma de viveiros | Investimento em viveiros | **SVMA** | Investimentos (sem execução recente) |
+
+Todas as ações estão no programa **Zeladoria de Espaços Públicos** (2705) ou **Sustentabilidade Ambiental** (6655, 6682), com recursos do **Tesouro Municipal**. A ação 2705 inclui manejo de praças e áreas verdes, não só árvores: use-a como **teto** do gasto com árvores.
+
+::: {.callout-tip}
+Para separar poda × remoção × plantio seria preciso descer ao nível de **empenho e contrato** (API-SOF com token, ou o Portal da Transparência), cruzando o objeto de cada contrato. Está no backlog do sprint 3.
+:::
+
+```{ojs}
+//| echo: false
+ga = FileAttachment("site_data/orcamento_grupo_acao_ano.csv").csv({typed: true})
+orc = FileAttachment("site_data/orcamento_subprefeitura_ano.csv").csv({typed: true})
+fmt = (v, d = 0) => v === null || v === undefined || Number.isNaN(v) ? "—" : (+v).toLocaleString("pt-BR", {maximumFractionDigits: d})
+nomeAcao = ({"2705": "2705 · Áreas verdes e vegetação arbórea", "6655": "6655 · Promoção da arborização", "6682": "6682 · Viveiros de produção", "6686": "6686 · Viveiros estacionais", "1712": "1712 · Construção de viveiros", "7129": "7129 · Reforma de viveiros"})
+ga2 = ga.map(d => ({...d, acao: String(d.acao).padStart(4, "0"), mi: d.Vl_Liquidado / 1e6})).filter(d => d.mi > 0.01)
+```
+
+## Execução por ano e por executor
+
+```{ojs}
+//| echo: false
+viewof valor = Inputs.radio(new Map([["Liquidado", "Vl_Liquidado"], ["Orçado atualizado", "Vl_Orcado_Atualizado"], ["Empenhado", "Vl_EmpenhadoLiquido"]]), {value: "Vl_Liquidado", label: "Valor"})
+```
+
+```{ojs}
+//| echo: false
+Plot.plot({
+  width: 760, height: 340, marginLeft: 60,
+  style: {background: "transparent", color: "currentColor"},
+  x: {label: null, tickFormat: d => String(d)}, y: {label: "R$ milhões", grid: true},
+  color: {legend: true, domain: ["Subprefeituras (32)", "SMSUB (central)", "SME (escolas)", "SVMA"], range: ["#1b5e20", "#43a047", "#a5d6a7", "#f9a825"]},
+  marks: [
+    Plot.barY(ga.map(d => ({...d, v: d[valor] / 1e6})), Plot.groupX({y: "sum"}, {x: "ano", y: "v", fill: "grupo_orgao", tip: true, title: d => `${d.grupo_orgao}`})),
+    Plot.ruleY([0])
+  ]
+})
+```
+
+<small>2026: execução até a data da extração (parcial).</small>
+
+```{ojs}
+//| echo: false
+Inputs.table(d3.flatRollup(ga2, v => d3.sum(v, d => d.mi), d => nomeAcao[d.acao] ?? d.acao, d => d.grupo_orgao, d => d.ano)
+  .map(([acao, grupo, ano, mi]) => ({Ação: acao, Executor: grupo, Ano: String(ano), "Liquidado (R$ mi)": +mi.toFixed(1)})),
+  {sort: "Liquidado (R$ mi)", reverse: true, rows: 12})
+```
+
+## Subprefeituras em 2026 (ação 2705)
+
+```{ojs}
+//| echo: false
+s26 = orc.filter(d => d.ano === 2026).map(d => ({sub: d.nm_sub, atualizado: d.Vl_Orcado_Atualizado / 1e6, liquidado: d.Vl_Liquidado / 1e6, pct: d.pct_liquidado}))
+Plot.plot({
+  marginLeft: 210, height: 32 * 20 + 40, width: 760,
+  style: {background: "transparent", color: "currentColor"},
+  x: {label: "R$ milhões", grid: true}, y: {label: null, domain: d3.sort(s26, d => -d.atualizado).map(d => d.sub)},
+  marks: [
+    Plot.barX(s26, {y: "sub", x: "atualizado", fill: "currentColor", fillOpacity: 0.15}),
+    Plot.barX(s26, {y: "sub", x: "liquidado", fill: "#2e7d32", tip: true,
+      title: d => `${d.sub}\natualizado: R$ ${fmt(d.atualizado, 1)} mi\nliquidado: R$ ${fmt(d.liquidado, 1)} mi (${fmt(d.pct, 1)}%)`})
+  ]
+})
+```
+
+<small>Barra clara: orçamento atualizado · barra verde: liquidado. Fonte: [execução orçamentária 2026](https://dados.prefeitura.sp.gov.br/dataset/execucao-orcamentaria) e [base 2003–2025](https://dados.prefeitura.sp.gov.br/dataset/base-dados-execucao), Portal de Dados Abertos da PMSP.</small>

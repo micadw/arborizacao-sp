@@ -35,3 +35,10 @@ Levantamento de 2026-11-20. Valores de linha de base vêm de comunicados oficiai
 2. **Cobertura vegetal ≠ cobertura de copa.** Os 54% incluem maciços florestais do extremo sul. Para equidade, usar cobertura arbórea em área urbanizada por distrito.
 3. **Meta 85 do PlanClima é distrital** — é a meta que melhor se encaixa no mapa do painel (linha de base × alvo por distrito). A numeração das metas veio da versão inicial da revisão; a versão final foi lançada online em 25/01/2026 e pode ter renumerado as metas — conferir.
 4. O texto do PlanClima e o do Programa de Metas usam o mesmo alvo para bosques (50 até 2028) e jardins de chuva (1.000 até 2028).
+
+## Referências
+
+- [Programa de Metas 2025-2028](https://programademetas.prefeitura.sp.gov.br/)
+- [PlanClima SP](https://prefeitura.sp.gov.br/web/planclimasp) · [Revisão 2025 — consulta pública (Participe+)](https://participemais.prefeitura.sp.gov.br/legislation/processes/345/topics) · [versão inicial (PDF)](https://participemais.prefeitura.sp.gov.br/system/documents/attachments/000/004/150/original/a6f49c8b4e056678ece8843bc23c70c0be2ac04d.pdf) · [lançamento da versão revisada (jan/2026)](https://prefeitura.sp.gov.br/web/secretaria_executiva_de_mudancas_climaticas/w/prefeitura-de-s%C3%A3o-paulo-entrega-o-plano-de-a%C3%A7%C3%A3o-clim%C3%A1tica-totalmente-revisado)
+- [Plano Diretor Estratégico — Lei 16.050/2014](https://legislacao.prefeitura.sp.gov.br/leis/lei-16050-de-31-de-julho-de-2014)
+- [Relatório Anual da Gestão da Arborização Urbana 2022 (PDF)](https://www.capital.sp.gov.br/documents/d/meio_ambiente/relatorio-gestao-arborizacao_2022-pdf)

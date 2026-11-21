@@ -1,0 +1,30 @@
+---
+title: "Sobre o projeto"
+---
+
+::: {.callout-note}
+Projeto pessoal e acadêmico, construído só com **dados abertos**. Não representa posição oficial da Prefeitura de São Paulo nem de nenhum de seus órgãos.
+:::
+
+Este observatório reúne, numa mesma base, o que a cidade publica sobre suas árvores — árvores viárias, cobertura vegetal, quedas, orçamento — e compara com as metas do **Plano Diretor Estratégico**, do **Plano Municipal de Arborização Urbana**, do **PlanClima SP** e do **Programa de Metas 2025-2028**.
+
+**Autor:** Amilcar Ferraz Farina (Mica) — especialista em Data Science e Analytics (ESALQ/USP).
+**Código:** [github.com/micadw/arborizacao-sp](https://github.com/micadw/arborizacao-sp) · licença MIT (código), CC BY 4.0 (textos).
+**Portfólio:** [micadw.github.io](https://micadw.github.io/)
+
+## Como os números são feitos
+
+- **Árvores viárias:** camada de arborização viária do GeoSampa, contada por distrito e subprefeitura.
+- **Cobertura vegetal e arbórea:** Mapeamento Digital da Cobertura Vegetal (voo de 2017), cruzado com o limite exato de cada distrito.
+- **Quedas:** ocorrências registradas pela Defesa Civil (SIGRC) e publicadas no GeoSampa.
+- **Orçamento:** execução orçamentária aberta do SOF, ações 2705, 6655 e 6682.
+
+Tudo é reproduzível pelos scripts em `src/` — ver o [README](https://github.com/micadw/arborizacao-sp#como-reproduzir).
+
+## Documentação
+
+- [Catálogo de fontes](docs/01_catalogo_fontes.md)
+- [Matriz de metas](docs/02_matriz_metas.md)
+- [Benchmarking](docs/03_benchmarking.md)
+- [Indicadores e desenho do painel](docs/04_indicadores_painel.md)
+- [Decisões](docs/decisoes.md)

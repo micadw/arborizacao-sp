@@ -5,8 +5,12 @@ project:
     - site_data/*
   render:
     - index.qmd
-    - painel.qmd
+    - metas.qmd
+    - orcamento.qmd
+    - sprints.qmd
+    - sobre.qmd
     - docs/*.md
+    - "!docs/backlog.md"
 
 lang: pt-BR
 
@@ -18,17 +22,22 @@ website:
   navbar:
     left:
       - href: index.qmd
-        text: Início
-      - href: painel.qmd
         text: Painel
-      - text: Documentação
+      - href: metas.qmd
+        text: Metas
+      - href: orcamento.qmd
+        text: Orçamento
+      - href: sprints.qmd
+        text: Sprints
+      - text: Fontes e documentação
         menu:
           - href: docs/01_catalogo_fontes.md
           - href: docs/02_matriz_metas.md
           - href: docs/03_benchmarking.md
           - href: docs/04_indicadores_painel.md
           - href: docs/decisoes.md
-          - href: docs/backlog.md
+      - href: sobre.qmd
+        text: Sobre
   page-footer:
     center: "Projeto pessoal com dados abertos · não representa posição oficial da Prefeitura de São Paulo"
 

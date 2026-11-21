@@ -27,7 +27,7 @@ title: "Indicadores e desenho do painel"
 | I18 | Quedas por 10 mil árvores viárias | quedas registradas / árvores viárias × 10.000 | #4b, #1 | S | 2 ✅ |
 | I16 | Exposição ao calor × copa | correlação LST × I02 por distrito | #12, #10 | D | 3 |
 
-## Wireframe do painel (`painel.qmd`)
+## Wireframe do painel (`index.qmd`)
 
 ```
 ┌──────────────────────────────────────────────────────────────┐

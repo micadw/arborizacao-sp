@@ -1,0 +1,77 @@
+---
+title: "Metas e indicadores"
+subtitle: "O que foi prometido, quanto já se cumpriu e onde faltam dados"
+toc: false
+---
+
+```{ojs}
+//| echo: false
+distritos = FileAttachment("site_data/distrito.geojson").json()
+fmt = (v, d = 0) => v === null || v === undefined || Number.isNaN(v) ? "—" : (+v).toLocaleString("pt-BR", {maximumFractionDigits: d})
+metas = [
+  {id: "PdM Meta 3", meta: "Saldo líquido de +200 mil árvores", feito: 194938, alvo: 200000, unid: "árvores", prazo: 2028, status: "parcial", nota: "Só há dado de plantio bruto (SECOM, jun/2026); remoções e quedas não são publicadas de forma consolidada."},
+  {id: "PlanClima 53 / PdM", meta: "Bosques urbanos de nativas", feito: null, alvo: 50, unid: "bosques", prazo: 2028, status: "sem dado", nota: "Alvo de 100 em 2032 e 150 em 2036."},
+  {id: "PlanClima 52 / PdM", meta: "Jardins de chuva", feito: null, alvo: 1000, unid: "jardins", prazo: 2028, status: "sem dado", nota: "Alvo de 1.500 em 2032 e 2.000 em 2036."},
+  {id: "PMAU Ação 01", meta: "Inventário arbóreo (~650 mil árvores)", feito: null, alvo: 650000, unid: "árvores", prazo: 2028, status: "em andamento", nota: "Iniciado em set/2025, ainda sem dados publicados."},
+  {id: "PMAU / PlanClima 55", meta: "Planos regionais de arborização / rotas arborizadas", feito: null, alvo: 32, unid: "subprefeituras", prazo: 2032, status: "sem dado", nota: "Planos Regionais previstos até 2028 (Meta 85.3)."},
+  {id: "PdM 2021-24 Meta 62", meta: "Cobertura vegetal acima de 50%", feito: 54.13, alvo: 50, unid: "%", prazo: 2024, status: "atingida", nota: "SVMA, 2023 (metodologia com imagens Planet)."}
+]
+cor = ({"atingida": "#2e7d32", "parcial": "#f9a825", "em andamento": "#1976d2", "sem dado": "#9e9e9e"})
+```
+
+## Atingimento das metas
+
+```{ojs}
+//| echo: false
+html`<div class="grid">${metas.map(m => {
+  const pct = m.feito === null ? null : m.feito / m.alvo;
+  return html`<div class="g-col-12 g-col-md-6 card-meta" style="border-left-color:${cor[m.status]}">
+    <div class="titulo"><span class="selo" style="background:${cor[m.status]}">${m.status}</span> ${m.id} · prazo ${m.prazo}</div>
+    <div class="valor">${m.feito === null ? "—" : fmt(m.feito, 2)} <small>de ${fmt(m.alvo)} ${m.unid}</small></div>
+    <div class="barra"><span style="width:${pct === null ? 0 : Math.min(pct, 1) * 100}%;background:${cor[m.status]}"></span></div>
+    <div><strong>${m.meta}</strong></div>
+    <div class="fonte">${m.nota}</div>
+  </div>`;
+})}</div>`
+```
+
+## Meta 85 do PlanClima por distrito
+
+A meta pede **+1 ponto percentual de cobertura vegetal em cada distrito até 2028**, sobre o mapeamento de 2017. A barra mostra a base de cada distrito e o traço, o alvo. O avanço só poderá ser medido quando um novo mapeamento for publicado.
+
+```{ojs}
+//| echo: false
+dd = distritos.features.map(f => ({nome: f.properties.nm_distrito_municipal, base: f.properties.pct_cobertura_vegetal, alvo: f.properties.pct_cobertura_vegetal + 1}))
+viewof ordem = Inputs.radio(new Map([["Menor cobertura primeiro", "asc"], ["Maior cobertura primeiro", "desc"]]), {value: "asc", label: "Ordem"})
+viewof n = Inputs.range([10, 96], {value: 30, step: 1, label: "Distritos exibidos"})
+```
+
+```{ojs}
+//| echo: false
+Plot.plot({
+  marginLeft: 170, height: n * 18 + 40, width: 760,
+  style: {background: "transparent", color: "currentColor"},
+  x: {label: "Cobertura vegetal (% da área)", grid: true},
+  y: {label: null, domain: d3.sort(dd, d => ordem === "asc" ? d.base : -d.base).slice(0, n).map(d => d.nome)},
+  marks: [
+    Plot.barX(dd, {y: "nome", x: "base", fill: "base", tip: true, title: d => `${d.nome}\nbase 2017: ${fmt(d.base, 1)}%\nalvo 2028: ${fmt(d.alvo, 1)}%`}),
+    Plot.tickX(dd, {y: "nome", x: "alvo", stroke: "#f9a825", strokeWidth: 2}),
+  ],
+  color: {scheme: "greens"}
+})
+```
+
+## Indicadores
+
+| Código | Indicador | Situação |
+|---|---|---|
+| I01 | Cobertura vegetal (%) por distrito | ✅ calculado (base 2017) |
+| I02 | Cobertura arbórea (%) por distrito | ✅ calculado |
+| I03/I04 | Árvores viárias por km² / por habitante | ✅ por km² · população a integrar |
+| I06/I07 | Demanda e atendimento SP156 de poda/remoção | ⏳ sprint 3 |
+| I08–I10 | Plantio, saldo líquido, progresso da Meta 3 | ⚠️ só plantio bruto agregado |
+| I11/I12 | Nativas da Mata Atlântica / carbono | ⛔ depende do inventário (sem espécie na base atual) |
+| I13 | Execução orçamentária | ✅ 2024–2026 ([Orçamento](orcamento.qmd)) |
+| I18 | Quedas por 10 mil árvores | ✅ por subprefeitura (2026) |
+
+Detalhes: [matriz de metas](docs/02_matriz_metas.md) · [indicadores](docs/04_indicadores_painel.md).

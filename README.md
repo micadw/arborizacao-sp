@@ -6,7 +6,7 @@ Painel e base de dados sobre as árvores da cidade de São Paulo: plantios, poda
 
 **Palavras-chave:** arborização urbana · floresta urbana · cobertura vegetal · infraestrutura verde · PlanClima · Programa de Metas · SIG · dados abertos · São Paulo
 
-**Status:** sprint 2 em andamento — dados reais do GeoSampa e do orçamento no painel; ver [`docs/backlog.md`](docs/backlog.md).
+**Status:** v0.2 em andamento — site: <https://micadw.github.io/arborizacao-sp/> · ver [`docs/backlog.md`](docs/backlog.md).
 
 ## Perguntas
 
@@ -42,7 +42,7 @@ Painel e base de dados sobre as árvores da cidade de São Paulo: plantios, poda
 ## Estrutura
 
 ```
-├── _quarto.yml · index.qmd · painel.qmd   site Quarto (tema claro/escuro)
+├── _quarto.yml · index.qmd (painel) · metas.qmd · orcamento.qmd · sprints.qmd · sobre.qmd
 ├── docs/            documentação viva (catálogo, metas, indicadores…)
 ├── notebooks/       001_coleta.ipynb (…002_eda, 003_modelagem)
 ├── src/             funções de coleta e agregação

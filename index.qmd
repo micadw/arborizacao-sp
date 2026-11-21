@@ -1,17 +1,129 @@
 ---
 title: "Observatório da Arborização Urbana de São Paulo"
-subtitle: "Árvores, cobertura vegetal e metas climáticas da cidade, com dados abertos"
+subtitle: "Árvores, cobertura vegetal, orçamento e metas da cidade — com dados abertos"
+toc: false
+page-layout: full
 ---
 
-::: {.callout-note}
-Projeto pessoal e acadêmico, construído só com dados abertos. Não representa posição oficial da Prefeitura de São Paulo.
+::: {.callout-note appearance="simple"}
+Projeto pessoal e acadêmico, construído só com dados abertos; **não representa posição oficial da Prefeitura de São Paulo**. Extração de 2026-11-20. Veja [Metas](metas.qmd), [Orçamento](orcamento.qmd) e as [fontes](docs/01_catalogo_fontes.md).
 :::
 
-Este observatório reúne, numa mesma base, o que a cidade publica sobre suas árvores — plantios, podas, remoções, quedas, cobertura vegetal, orçamento — e compara com as metas do **Plano Diretor**, do **Plano Municipal de Arborização Urbana**, do **PlanClima SP** e do **Programa de Metas 2025-2028**.
+```{ojs}
+//| echo: false
+resumo = FileAttachment("site_data/resumo.json").json()
+distritos = FileAttachment("site_data/distrito.geojson").json()
+subs = FileAttachment("site_data/subprefeitura.geojson").json()
+orc = FileAttachment("site_data/orcamento_subprefeitura_ano.csv").csv({typed: true})
+orcAcao = FileAttachment("site_data/orcamento_acao_ano.csv").csv({typed: true})
+fmt = (v, d = 0) => v === null || v === undefined || Number.isNaN(v) ? "—" : (+v).toLocaleString("pt-BR", {maximumFractionDigits: d})
+```
 
-- **[Painel](painel.qmd)** — cartões de meta, mapa por distrito e subprefeitura (em construção).
-- **[Catálogo de fontes](docs/01_catalogo_fontes.md)** — de onde vêm os dados e o que ainda falta confirmar.
-- **[Matriz de metas](docs/02_matriz_metas.md)** — o que foi prometido, por quem e até quando.
-- **[Indicadores](docs/04_indicadores_painel.md)** — como cada número é calculado.
+```{ojs}
+//| echo: false
+liq = d3.sum(orcAcao.filter(d => d.ano === 2026), d => d.Vl_Liquidado)
+atu = d3.sum(orcAcao.filter(d => d.ano === 2026), d => d.Vl_Orcado_Atualizado)
+cards = [
+  {t: "Árvores viárias cadastradas", v: fmt(resumo.arvores_viarias_total), s: "GeoSampa · camada de arborização viária", link: "docs/01_catalogo_fontes.md"},
+  {t: "Cobertura vegetal (base 2017)", v: fmt(resumo.cobertura_vegetal_pct_municipio, 1) + "%", s: `arbórea: ${fmt(resumo.cobertura_arborea_pct_municipio, 1)}% · meta: +1 p.p. por distrito até 2028`, link: "metas.qmd"},
+  {t: "Plantio desde 2025 × Meta 3 do PdM", v: "97%", s: "194.938 plantadas (bruto) / 200 mil líquidas", barra: 194938 / 200000, link: "metas.qmd"},
+  {t: "Orçamento 2026 liquidado", v: "R$ " + fmt(liq / 1e6) + " mi", s: `de R$ ${fmt(atu / 1e6)} mi atualizados (${fmt(liq / atu * 100)}%)`, barra: liq / atu, link: "orcamento.qmd"},
+  {t: "Quedas de árvore em 2026", v: fmt(resumo.quedas_registradas), s: "jan–set · Defesa Civil (SIGRC)", link: "docs/01_catalogo_fontes.md"}
+]
+html`<div class="grid">${cards.map(c => html`
+  <a class="g-col-12 g-col-sm-6 g-col-lg card-meta card-link" href="${c.link}">
+    <div class="titulo">${c.t}</div>
+    <div class="valor">${c.v}</div>
+    ${c.barra ? html`<div class="barra"><span style="width:${Math.min(c.barra, 1) * 100}%"></span></div>` : ""}
+    <div class="fonte">${c.s}</div>
+  </a>`)}</div>`
+```
 
-Use o botão de tema (☀/☾) no topo para alternar entre claro e escuro.
+## Mapa interativo
+
+Passe o mouse sobre um território para ver sua ficha ao lado.
+
+```{ojs}
+//| echo: false
+viewof nivel = Inputs.radio(new Map([["Distritos (96)", "distrito"], ["Subprefeituras (32)", "subprefeitura"]]), {label: "Recorte", value: "distrito"})
+indicadores = nivel === "distrito"
+  ? new Map([
+      ["Cobertura arbórea (% da área)", "pct_cobertura_arborea"],
+      ["Cobertura vegetal (% da área) — base da Meta 85", "pct_cobertura_vegetal"],
+      ["Árvores viárias por km²", "arvores_por_km2"],
+      ["Árvores viárias (total)", "arvores_viarias"]])
+  : new Map([
+      ["Quedas por 10 mil árvores viárias (2026)", "quedas_por_10mil_arvores"],
+      ["Quedas registradas (2026)", "quedas_registradas"],
+      ["Orçamento 2026 liquidado (R$ mi)", "liquidado_mi"],
+      ["Orçamento 2026: % liquidado", "pct_liquidado"],
+      ["Árvores viárias (total)", "arvores_viarias"]])
+viewof indicador = Inputs.select(indicadores, {label: "Indicador"})
+```
+
+```{ojs}
+//| echo: false
+orc2026 = new Map(orc.filter(d => d.ano === 2026).map(d => [d.chave_sub, d]))
+camada = {
+  const fc = structuredClone(nivel === "distrito" ? distritos : subs);
+  for (const f of fc.features) {
+    const p = f.properties;
+    p.nome = p.nm_distrito_municipal ?? p.nm_subprefeitura;
+    if (nivel === "distrito") p.alvo_meta85 = +(p.pct_cobertura_vegetal + 1).toFixed(1);
+    else {
+      const o = orc2026.get(p.chave_sub);
+      p.liquidado_mi = o ? +(o.Vl_Liquidado / 1e6).toFixed(1) : null;
+      p.atualizado_mi = o ? +(o.Vl_Orcado_Atualizado / 1e6).toFixed(1) : null;
+      p.pct_liquidado = o ? o.pct_liquidado : null;
+    }
+  }
+  return fc;
+}
+rotulo = [...indicadores].find(([, v]) => v === indicador)[0]
+```
+
+:::: {.grid}
+::: {.g-col-12 .g-col-lg-8}
+```{ojs}
+//| echo: false
+viewof sel = Plot.plot({
+  projection: {type: "mercator", domain: camada},
+  width: 720, height: 720,
+  style: {background: "transparent", color: "currentColor"},
+  color: {scheme: "greens", legend: true, label: rotulo, style: {background: "transparent", color: "currentColor"}},
+  marks: [
+    Plot.geo(camada, {fill: d => d.properties[indicador], stroke: "currentColor", strokeOpacity: 0.25}),
+    Plot.geo(camada, Plot.pointer(Plot.centroid({stroke: "#f9a825", strokeWidth: 3, fill: "none",
+      channels: {Território: d => d.properties.nome, [rotulo]: d => fmt(d.properties[indicador], 1)},
+      tip: true})))
+  ]
+})
+```
+:::
+::: {.g-col-12 .g-col-lg-4}
+```{ojs}
+//| echo: false
+ficha = {
+  const f = sel;
+  if (!f) return html`<div class="ficha"><em>Passe o mouse sobre o mapa.</em></div>`;
+  const p = f.properties;
+  const linhas = nivel === "distrito"
+    ? [["Subprefeitura (código)", p.cd_identificador_subprefeitura], ["Cobertura vegetal", fmt(p.pct_cobertura_vegetal, 1) + "%"],
+       ["Alvo Meta 85 (2028)", fmt(p.alvo_meta85, 1) + "%"], ["Cobertura arbórea", fmt(p.pct_cobertura_arborea, 1) + "%"],
+       ["Árvores viárias", fmt(p.arvores_viarias)], ["Árvores por km²", fmt(p.arvores_por_km2)]]
+    : [["Árvores viárias", fmt(p.arvores_viarias)], ["Quedas 2026", fmt(p.quedas_registradas)],
+       ["Quedas / 10 mil árvores", fmt(p.quedas_por_10mil_arvores, 1)], ["Orçamento 2026 atualizado", "R$ " + fmt(p.atualizado_mi, 1) + " mi"],
+       ["Liquidado", "R$ " + fmt(p.liquidado_mi, 1) + " mi (" + fmt(p.pct_liquidado, 1) + "%)"]];
+  return html`<div class="ficha"><h4>${p.nome}</h4><table class="table table-sm">${linhas.map(([k, v]) => html`<tr><th>${k}</th><td>${v}</td></tr>`)}</table></div>`;
+}
+```
+:::
+::::
+
+```{ojs}
+//| echo: false
+Inputs.table(camada.features.map(f => ({Território: f.properties.nome, [rotulo]: f.properties[indicador]})),
+  {sort: rotulo, reverse: true, rows: 10})
+```
+
+<small>Fontes: [GeoSampa](https://geosampa.prefeitura.sp.gov.br/) (árvores viárias, cobertura vegetal 2017, distritos, subprefeituras, quedas/SIGRC) · [Portal de Dados Abertos](https://dados.prefeitura.sp.gov.br/dataset/execucao-orcamentaria) (execução orçamentária).</small>

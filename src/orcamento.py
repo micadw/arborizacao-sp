@@ -92,6 +92,23 @@ def main(raw: Path, out: Path) -> None:
     orgaos = (df.groupby(["ano", "Ds_Orgao"])["Vl_Liquidado"].sum()
               .reset_index().sort_values(["ano", "Vl_Liquidado"], ascending=[True, False]))
     orgaos.to_csv(out / "orcamento_orgao_ano.csv", index=False)
+
+    # Quem executa cada ação: SVMA, SMSUB (central), subprefeituras, SME, outros
+    def grupo(orgao: str) -> str:
+        o = str(orgao).lower()
+        if o.startswith("subprefeitura"):
+            return "Subprefeituras (32)"
+        if "subprefeituras" in o:
+            return "SMSUB (central)"
+        if "verde e do meio ambiente" in o:
+            return "SVMA"
+        if "educa" in o:
+            return "SME (escolas)"
+        return "Outros órgãos"
+    df["grupo_orgao"] = df["Ds_Orgao"].map(grupo)
+    ga = (df.groupby(["ano", "acao", "grupo_orgao"])[VALORES].sum().reset_index())
+    ga["ds_acao"] = ga["acao"].map(ACOES)
+    ga.to_csv(out / "orcamento_grupo_acao_ano.csv", index=False)
     print(por_acao.round(0).to_string())
     print(por_sub[por_sub.ano == por_sub.ano.max()].sort_values(
         "Vl_Liquidado", ascending=False).head(10).to_string())

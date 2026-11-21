@@ -17,3 +17,5 @@ title: "Registro de decisões"
 | 2026-11-20 | Coleta roda no próprio ambiente do Claude (rede liberada) por scripts em `src/`; o notebook 001 vira opcional, para quem quiser reproduzir no Colab | Reprodutível por linha de comando e mais rápido que o Colab |
 | 2026-11-20 | Cobertura por distrito por interseção exata de polígonos, não por centróide | Centróide jogava a Serra da Cantareira inteira num só distrito (113% de cobertura) |
 | 2026-11-20 | "1% até 2028" da Meta 85 do PlanClima lido como +1 ponto percentual | Leitura mais conservadora; confirmar com a SVMA/SECLIMA ou na versão final |
+| 2026-11-21 | Site publicado no GitHub Pages (branch gh-pages, via Actions) e card no portfólio | Pedido do Mica; o projeto segue com aviso de não oficialidade |
+| 2026-11-21 | Não há dotação separada para poda, remoção ou plantio; o painel mostra as ações 2705, 6655 e 6682 por executor | Achado na base de execução 2024–2026 |
